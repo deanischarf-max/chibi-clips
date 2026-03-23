@@ -37,10 +37,10 @@ jobs:
         with: { path: dist, merge-multiple: true }
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1.0
-          name: B&M Clips v1.1.0
+          tag_name: v1.2.0
+          name: B&M Clips v1.2.0
           files: dist/*
           body: |
-            ## B&M Clips v1.1.0
+            ## B&M Clips v1.2.0
             Helles Design + B&M Branding
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }

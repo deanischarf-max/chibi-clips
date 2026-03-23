@@ -111,6 +111,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
     <div class="sidebar">
       <button class="nav-btn active" data-tab="clips"><span class="nav-icon">&#127916;</span> Meine Clips</button>
       <button class="nav-btn" data-tab="record"><span class="nav-icon">&#128308;</span> Aufnehmen</button>
+      <button class="nav-btn" data-tab="upload"><span class="nav-icon">&#128228;</span> Hochladen</button>
       <button class="nav-btn" data-tab="settings"><span class="nav-icon">&#9881;</span> Einstellungen</button>
       <div class="sidebar-footer">
         <div class="rec-status"><div class="rec-dot" id="recDot"></div><span id="recLabel">Bereit</span></div>
@@ -152,7 +153,57 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
           </div>
           <div class="rec-settings">
             <label>Qualitaet: <select id="qualitySelect"><option value="high">Hoch (1080p)</option><option value="medium">Mittel (720p)</option><option value="low">Niedrig (480p)</option></select></label>
-            <label>Clip-Laenge: <select id="clipLength"><option value="15">15 Sek</option><option value="30" selected>30 Sek</option><option value="60">60 Sek</option><option value="120">2 Min</option></select></label>
+            <label>Clip-Laenge: <select id="clipLength"><option value="15">15 Sek</option><option value="30" selected>30 Sek</option><option value="60">60 Sek</option><option value="120">2 Min</option><option value="300">5 Min</option><option value="0">Unbegrenzt</option></select></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Tab -->
+      <div class="tab hidden" id="tab-upload">
+        <div class="header"><h2>Hochladen</h2></div>
+        <div class="content">
+          <div style="max-width:500px">
+            <!-- YouTube Section -->
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <span style="font-size:24px">&#9654;</span>
+                <div>
+                  <div style="font-weight:700;font-size:15px">YouTube</div>
+                  <div style="font-size:12px;color:var(--dim)" id="ytStatus">Nicht verbunden</div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnYtConnect" style="margin-left:auto">Verbinden</button>
+              </div>
+              <div class="hidden" id="ytUploadSection">
+                <label style="font-size:12px;color:var(--dim)">Clip auswaehlen:</label>
+                <select id="ytClipSelect" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--txt);margin:6px 0"></select>
+                <label style="font-size:12px;color:var(--dim)">Titel:</label>
+                <input type="text" id="ytTitle" placeholder="Video Titel" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--txt);margin:6px 0">
+                <label style="font-size:12px;color:var(--dim)">Beschreibung:</label>
+                <textarea id="ytDesc" placeholder="Beschreibung (optional)" rows="3" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--txt);margin:6px 0;resize:vertical"></textarea>
+                <label style="font-size:12px;color:var(--dim)">Sichtbarkeit:</label>
+                <select id="ytPrivacy" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--txt);margin:6px 0">
+                  <option value="unlisted">Nicht gelistet</option>
+                  <option value="public">Oeffentlich</option>
+                  <option value="private">Privat</option>
+                </select>
+                <button class="btn btn-primary" id="btnYtUpload" style="width:100%;margin-top:8px">&#128228; Auf YouTube hochladen</button>
+                <div class="hidden" id="ytProgress" style="margin-top:8px">
+                  <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden"><div id="ytProgressFill" style="height:100%;background:var(--accent);width:0%;transition:width .3s"></div></div>
+                  <div style="text-align:center;font-size:11px;color:var(--dim);margin-top:4px" id="ytProgressText">0%</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Share Link Section -->
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+              <div style="font-weight:700;font-size:15px;margin-bottom:8px">&#128279; Clip teilen</div>
+              <div style="font-size:12px;color:var(--dim);margin-bottom:12px">Waehle einen Clip und teile den Dateipfad</div>
+              <select id="shareClipSelect" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--txt);margin-bottom:8px"></select>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" id="btnCopyPath" style="flex:1">&#128203; Pfad kopieren</button>
+                <button class="btn btn-ghost btn-sm" id="btnOpenFile" style="flex:1">&#128194; Im Explorer oeffnen</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

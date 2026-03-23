@@ -19,6 +19,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
         if (btn.dataset.tab === 'clips') loadClips();
         if (btn.dataset.tab === 'record') loadSources();
+        if (btn.dataset.tab === 'upload') loadUploadClips();
     };
 });
 
@@ -219,6 +220,48 @@ window.api.onSaveClip(async () => {
         toast('Druecke zuerst Aufnahme starten!');
     }
 });
+
+// ── Upload Tab ──
+async function loadUploadClips() {
+    const clips = await window.api.getClips();
+    const options = clips.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+    const ytSelect = document.getElementById('ytClipSelect');
+    const shareSelect = document.getElementById('shareClipSelect');
+    if (ytSelect) ytSelect.innerHTML = options || '<option>Keine Clips</option>';
+    if (shareSelect) shareSelect.innerHTML = options || '<option>Keine Clips</option>';
+}
+
+// YouTube Connect (placeholder - needs Google API Client ID)
+document.getElementById('btnYtConnect').onclick = () => {
+    toast('YouTube-Verbindung benoetigt einen Google API Key. Kommt in einem Update!');
+    // TODO: OAuth2 flow with Google API
+    // For now, show upload section anyway for demo
+    document.getElementById('ytStatus').textContent = 'Demo-Modus';
+    document.getElementById('ytUploadSection').classList.remove('hidden');
+    loadUploadClips();
+};
+
+// YouTube Upload (placeholder)
+document.getElementById('btnYtUpload').onclick = () => {
+    toast('YouTube Upload benoetigt Google API Key. Kommt bald!');
+};
+
+// Share - Copy path
+document.getElementById('btnCopyPath').onclick = async () => {
+    const clips = await window.api.getClips();
+    const name = document.getElementById('shareClipSelect').value;
+    const clip = clips.find(c => c.name === name);
+    if (clip) {
+        navigator.clipboard.writeText(clip.path);
+        toast('Pfad kopiert: ' + clip.path);
+    }
+};
+
+// Share - Open in explorer
+document.getElementById('btnOpenFile').onclick = () => {
+    window.api.openClipsFolder();
+};
+
 
 // ── Settings ──
 (async () => {
