@@ -1,0 +1,26 @@
+{
+  "name": "chibi-clips",
+  "version": "1.0.0",
+  "description": "Chibi Clips - Gaming Clip Manager",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win --publish never",
+    "build": "electron-builder --linux --publish never"
+  },
+  "author": "chibi.art",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "art.chibi.clips",
+    "productName": "Chibi Clips",
+    "files": ["main.js", "src/**/*"],
+    "win": { "target": [{"target": "nsis", "arch": ["x64"]}] },
+    "linux": { "target": "AppImage" },
+    "artifactName": "ChibiClips-Setup-${version}.${ext}",
+    "nsis": { "oneClick": true, "createDesktopShortcut": true }
+  }
+}
