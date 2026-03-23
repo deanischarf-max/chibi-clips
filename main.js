@@ -8,8 +8,8 @@ const CLIPS_DIR = path.join(app.getPath('videos'), 'ChibiClips');
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1300, height: 850, minWidth: 1000, minHeight: 700,
-        title: 'Chibi Clips',
-        backgroundColor: '#0a0a12',
+        title: 'B&M Clips',
+        backgroundColor: '#f5f5f8',
         frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'src', 'preload.js'),
