@@ -110,8 +110,22 @@ async function loadSources() {
 function selectSource(id, name) {
     selectedSource = id;
     document.getElementById('recSource').textContent = name;
-    loadSources(); // refresh selection
+    // Go back to settings view
+    document.getElementById('recStep2').classList.add('hidden');
+    document.getElementById('recStep1').classList.remove('hidden');
 }
+
+// Source picker buttons
+document.getElementById('btnChooseSource').onclick = async () => {
+    document.getElementById('recStep1').classList.add('hidden');
+    document.getElementById('recStep2').classList.remove('hidden');
+    await loadSources();
+};
+
+document.getElementById('btnBackFromSource').onclick = () => {
+    document.getElementById('recStep2').classList.add('hidden');
+    document.getElementById('recStep1').classList.remove('hidden');
+};
 
 document.getElementById('recBtn').onclick = () => {
     if (isRecording) stopRecording();
