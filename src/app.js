@@ -231,20 +231,77 @@ async function loadUploadClips() {
     if (shareSelect) shareSelect.innerHTML = options || '<option>Keine Clips</option>';
 }
 
-// YouTube Connect (placeholder - needs Google API Client ID)
-document.getElementById('btnYtConnect').onclick = () => {
-    toast('YouTube-Verbindung benoetigt einen Google API Key. Kommt in einem Update!');
-    // TODO: OAuth2 flow with Google API
-    // For now, show upload section anyway for demo
-    document.getElementById('ytStatus').textContent = 'Demo-Modus';
-    document.getElementById('ytUploadSection').classList.remove('hidden');
-    loadUploadClips();
+// YouTube Connect
+document.getElementById('btnYtConnect').onclick = async () => {
+    const status = await window.api.ytGetStatus();
+    if (status.connected) {
+        // Disconnect
+        await window.api.ytDisconnect();
+        document.getElementById('ytStatus').textContent = 'Nicht verbunden';
+        document.getElementById('btnYtConnect').textContent = 'Verbinden';
+        document.getElementById('ytUploadSection').classList.add('hidden');
+        toast('YouTube getrennt');
+        return;
+    }
+    if (!status.hasKeys) {
+        toast('YouTube API Keys werden noch eingerichtet. Kommt bald!');
+        return;
+    }
+    document.getElementById('btnYtConnect').textContent = 'Anmelden...';
+    document.getElementById('btnYtConnect').disabled = true;
+    const result = await window.api.ytConnect();
+    document.getElementById('btnYtConnect').disabled = false;
+    if (result.success) {
+        document.getElementById('ytStatus').textContent = 'Verbunden: ' + result.channel;
+        document.getElementById('btnYtConnect').textContent = 'Trennen';
+        document.getElementById('ytUploadSection').classList.remove('hidden');
+        loadUploadClips();
+        toast('Mit YouTube verbunden: ' + result.channel);
+    } else {
+        document.getElementById('btnYtConnect').textContent = 'Verbinden';
+        toast('Fehler: ' + result.error);
+    }
 };
 
-// YouTube Upload (placeholder)
-document.getElementById('btnYtUpload').onclick = () => {
-    toast('YouTube Upload benoetigt Google API Key. Kommt bald!');
+// YouTube Upload
+document.getElementById('btnYtUpload').onclick = async () => {
+    const clip = document.getElementById('ytClipSelect').value;
+    const title = document.getElementById('ytTitle').value || clip;
+    const desc = document.getElementById('ytDesc').value;
+    const privacy = document.getElementById('ytPrivacy').value;
+    if (!clip) { toast('Waehle einen Clip!'); return; }
+
+    document.getElementById('btnYtUpload').textContent = 'Wird hochgeladen...';
+    document.getElementById('btnYtUpload').disabled = true;
+    document.getElementById('ytProgress').classList.remove('hidden');
+
+    window.api.onYtProgress((pct) => {
+        document.getElementById('ytProgressFill').style.width = pct + '%';
+        document.getElementById('ytProgressText').textContent = pct + '%';
+    });
+
+    const result = await window.api.ytUpload(clip, title, desc, privacy);
+    document.getElementById('btnYtUpload').textContent = '📤 Auf YouTube hochladen';
+    document.getElementById('btnYtUpload').disabled = false;
+
+    if (result.success) {
+        toast('Video erfolgreich auf YouTube hochgeladen!');
+        document.getElementById('ytProgressText').textContent = 'Fertig!';
+    } else {
+        toast('Upload fehlgeschlagen: ' + result.error);
+        document.getElementById('ytProgress').classList.add('hidden');
+    }
 };
+
+// Check YouTube status on load
+(async () => {
+    const status = await window.api.ytGetStatus();
+    if (status.connected) {
+        document.getElementById('ytStatus').textContent = 'Verbunden: ' + status.channel;
+        document.getElementById('btnYtConnect').textContent = 'Trennen';
+        document.getElementById('ytUploadSection').classList.remove('hidden');
+    }
+})();
 
 // Share - Copy path
 document.getElementById('btnCopyPath').onclick = async () => {
@@ -327,5 +384,18 @@ function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,"&#39;").replace(/\\/g,'\\\\');
 }
 
+// ── Auto-Update ──
+async function checkForUpdate() {
+    try {
+        const r = await window.api.checkUpdate();
+        if (r.update && r.url) {
+            toast('Update v' + r.latest + ' wird heruntergeladen...');
+            const result = await window.api.downloadUpdate(r.url);
+            if (!result.success) toast('Update fehlgeschlagen: ' + result.error);
+        }
+    } catch(e) {}
+}
+
 // Init
 loadClips();
+checkForUpdate();
