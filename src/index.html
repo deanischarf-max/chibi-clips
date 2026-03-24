@@ -214,7 +214,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
         <div class="content">
           <div style="max-width:400px;display:flex;flex-direction:column;gap:14px">
             <label style="font-size:13px;color:var(--dim)">Hotkey fuer Clip</label>
-            <div style="background:var(--bg3);padding:10px 14px;border-radius:8px;font-weight:700">F9</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="hotkeyInput" value="F9" readonly style="background:var(--bg3);padding:10px 14px;border-radius:8px;font-weight:700;border:1px solid var(--border);color:var(--txt);flex:1;cursor:pointer;text-align:center;font-size:14px" onclick="startHotkeyCapture()" title="Klick und dann eine Taste druecken">
+              <button class="btn btn-ghost btn-sm" onclick="startHotkeyCapture()">Aendern</button>
+              <button class="btn btn-ghost btn-sm" onclick="resetHotkey()">Reset</button>
+            </div>
+            <div style="font-size:11px;color:var(--dim)">Klick auf das Feld und drueck die gewuenschte Taste</div>
             <label style="font-size:13px;color:var(--dim)">Clips-Ordner</label>
             <div style="background:var(--bg3);padding:10px 14px;border-radius:8px;font-size:12px;color:var(--dim);cursor:pointer" onclick="api.openClipsFolder()" id="clipsDirLabel">Laden...</div>
           </div>

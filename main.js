@@ -24,12 +24,41 @@ app.whenReady().then(() => {
     fs.mkdirSync(CLIPS_DIR, { recursive: true });
     createWindow();
 
-    // Global hotkey F9 = save clip
-    try { globalShortcut.register('F9', () => { if (mainWindow) mainWindow.webContents.send('save-clip'); }); } catch(e) {}
+    // Load saved hotkey and register
+    loadSettings();
+    registerHotkey(currentHotkey);
 });
 
 app.on('will-quit', () => globalShortcut.unregisterAll());
 app.on('window-all-closed', () => app.quit());
+
+let currentHotkey = 'F9';
+const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
+
+function loadSettings() {
+    try { const s = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8')); currentHotkey = s.hotkey || 'F9'; } catch(e) {}
+}
+
+function saveSettings() {
+    try { fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ hotkey: currentHotkey })); } catch(e) {}
+}
+
+function registerHotkey(key) {
+    globalShortcut.unregisterAll();
+    try {
+        globalShortcut.register(key, () => { if (mainWindow) mainWindow.webContents.send('save-clip'); });
+        console.log('Hotkey registered:', key);
+    } catch(e) { console.error('Hotkey failed:', key, e.message); }
+}
+
+ipcMain.handle('set-hotkey', (ev, key) => {
+    currentHotkey = key;
+    saveSettings();
+    registerHotkey(key);
+    return true;
+});
+
+ipcMain.handle('get-hotkey', () => currentHotkey);
 
 // Window controls
 ipcMain.handle('win-minimize', () => mainWindow.minimize());

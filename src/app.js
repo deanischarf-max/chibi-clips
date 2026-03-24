@@ -264,9 +264,55 @@ document.getElementById('btnOpenFile').onclick = () => {
 
 
 // ── Settings ──
+let capturingHotkey = false;
+
+function startHotkeyCapture() {
+    const input = document.getElementById('hotkeyInput');
+    input.value = 'Drueck eine Taste...';
+    input.style.borderColor = '#e94560';
+    capturingHotkey = true;
+}
+
+function resetHotkey() {
+    document.getElementById('hotkeyInput').value = 'F9';
+    document.getElementById('hotkeyInput').style.borderColor = '';
+    capturingHotkey = false;
+    window.api.setHotkey('F9');
+    toast('Hotkey auf F9 zurueckgesetzt');
+}
+
+document.addEventListener('keydown', (e) => {
+    if (!capturingHotkey) return;
+    e.preventDefault();
+    capturingHotkey = false;
+    const input = document.getElementById('hotkeyInput');
+    input.style.borderColor = '';
+
+    // Build key name
+    let key = '';
+    if (e.ctrlKey) key += 'Ctrl+';
+    if (e.shiftKey) key += 'Shift+';
+    if (e.altKey) key += 'Alt+';
+
+    // Map key code to Electron accelerator format
+    const keyMap = {
+        'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5','F6':'F6',
+        'F7':'F7','F8':'F8','F9':'F9','F10':'F10','F11':'F11','F12':'F12',
+    };
+    const finalKey = keyMap[e.key] || e.key.toUpperCase();
+    key += finalKey;
+
+    input.value = key;
+    window.api.setHotkey(key);
+    toast('Hotkey auf ' + key + ' gesetzt!');
+});
+
 (async () => {
     const dir = await window.api.getClipsDir();
     document.getElementById('clipsDirLabel').textContent = dir;
+    // Load saved hotkey
+    const savedKey = await window.api.getHotkey();
+    if (savedKey) document.getElementById('hotkeyInput').value = savedKey;
 })();
 
 // ── Utils ──

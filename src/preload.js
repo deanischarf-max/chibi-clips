@@ -12,4 +12,6 @@ contextBridge.exposeInMainWorld('api', {
     openClipsFolder: () => ipcRenderer.invoke('open-clips-folder'),
     importClip: () => ipcRenderer.invoke('import-clip'),
     onSaveClip: (cb) => ipcRenderer.on('save-clip', () => cb()),
+    setHotkey: (key) => ipcRenderer.invoke('set-hotkey', key),
+    getHotkey: () => ipcRenderer.invoke('get-hotkey'),
 });
